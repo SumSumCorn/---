@@ -1,0 +1,230 @@
+!<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+    <script src="js/partial.js"></script>
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+
+    <script>
+      //지연평가 시작시키고 유지시키는(이어 가는) 함수
+      // map
+      var mi = 0;
+      var fi = 0;
+      _.go(
+        _.range(100),
+        _.map(function (val) {
+          ++mi;
+          return val * val;
+        }),
+        _.filter(function (val) {
+          ++fi;
+          return val % 2;
+        }),
+        _.take(5),
+        console.log
+      );
+      console.log(mi, fi);
+
+      var mi = 0;
+      var fi = 0;
+      _.go(
+        _.range(100),
+        L.map(function (val) {
+          ++mi;
+          return val * val;
+        }),
+        L.filter(function (val) {
+          ++fi;
+          return val % 2;
+        }),
+        L.take(5),
+        console.log
+      );
+      console.log(mi, fi);
+      console.clear();
+      // 코드는 동일하지만 필요한 만큼만 루프를 돈것을 알수 있다.
+      // 알아서 최적화하는 강력함
+      // 순수함수, 평가 시점을 다르게 평가해도 동일하게 나옴
+      //
+
+      // filter reject
+
+      // 지연평가 끝을내는 함수
+      // take
+      // some every find
+
+      var users = [
+        { id: 101, name: 'ID' },
+        { id: 102, name: 'BJ' },
+        // 새로운 유저 추가
+        { id: 103, name: 'User3' },
+        { id: 104, name: 'User4' },
+        { id: 105, name: 'User5' },
+        { id: 106, name: 'User6' },
+        { id: 107, name: 'User7' },
+        { id: 108, name: 'User8' },
+        { id: 109, name: 'User9' },
+        { id: 110, name: 'User10' },
+      ];
+
+      var posts = [
+        { id: 201, body: '내용1', user_id: 101 },
+        { id: 202, body: '내용2', user_id: 101 },
+        // 새로운 포스트 추가
+        { id: 203, body: '내용3', user_id: 102 },
+        { id: 204, body: '내용4', user_id: 103 },
+        { id: 205, body: '내용5', user_id: 104 },
+        { id: 206, body: '내용6', user_id: 105 },
+        { id: 207, body: '내용7', user_id: 106 },
+        { id: 208, body: '내용8', user_id: 107 },
+        { id: 209, body: '내용9', user_id: 108 },
+        { id: 210, body: '내용10', user_id: 109 },
+      ];
+
+      var comments = [
+        { id: 301, body: '댓글1', user_id: 105, post_id: 201 },
+        { id: 302, body: '댓글2', user_id: 102, post_id: 201 },
+        // 새로운 댓글 추가
+        { id: 303, body: '댓글3', user_id: 103, post_id: 202 },
+        { id: 304, body: '댓글4', user_id: 102, post_id: 202 },
+        { id: 305, body: '댓글5', user_id: 101, post_id: 204 },
+        { id: 306, body: '댓글6', user_id: 110, post_id: 205 },
+        { id: 307, body: '댓글7', user_id: 109, post_id: 206 },
+        { id: 308, body: '댓글8', user_id: 108, post_id: 207 },
+        { id: 309, body: '댓글9', user_id: 107, post_id: 208 },
+        { id: 310, body: '댓글10', user_id: 106, post_id: 209 },
+      ];
+
+      //1. 특정인의 posts의 모든 comments 거르기
+      _.go(
+        _.where(posts, { user_id: 101 }),
+        // _.filter(posts, function (post) {
+        //   return post.user_id == 101;
+        // }),
+        _.pluck('id'),
+        // _.map(function (post) {
+        //   return post.id;
+        // }),
+        function (post_ids) {
+          return _.filter(comments, function (comment) {
+            return _.contains(post_ids, comment.post_id);
+            // return _.find(posts, function (post) {
+            //   return post.id == comment.post_id;
+            // });
+          });
+        },
+        console.log
+      );
+
+      //  정리한 내용
+      _.go(
+        _.where(posts, { user_id: 101 }),
+        _.pluck('id'),
+        function (post_ids) {
+          return _.filter(comments, function (comment) {
+            return _.contains(post_ids, comment.post_id);
+          });
+        }
+      );
+
+      // 특정인의 포스트의 모든 comment
+      var f1 = _.pipe(posts_by, comments_by_posts);
+
+      //2. 특정인의 posts에 comment를 단 친구들 이름들 뽑기
+      _.go(
+        _.where(posts, { user_id: 101 }),
+        _.pluck('id'),
+        function (post_ids) {
+          return _.filter(comments, function (comment) {
+            return _.contains(post_ids, comment.post_id);
+          });
+        },
+        _.map(function (comment) {
+          return _.find(users, function (user) {
+            return user.id == comment.user_id;
+          }).name;
+        }),
+        _.uniq,
+        console.log
+      );
+
+      // 중복 제거
+      function posts_by(attr) {
+        return _.where(posts, attr);
+      }
+      _.go(
+        { user_id: 101 },
+        posts_by,
+        _.pluck('id'),
+        function (post_ids) {
+          return _.filter(comments, function (comment) {
+            return _.contains(post_ids, comment.post_id);
+          });
+        },
+        console.log
+      );
+
+      var comments_by_posts = _.pipe(_.pluck('id'), function (post_ids) {
+        return _.filter(comments, function (comment) {
+          return _.contains(post_ids, comment.post_id);
+        });
+      });
+
+      _.go({ user_id: 101 }, posts_by, comments_by_posts, console.log);
+
+      var comment_to_user_names = _.map(function (comment) {
+        return _.find(users, function (user) {
+          return user.id == comment.user_id;
+        }).name;
+      });
+
+      var f2 = _.pipe(f1, comment_to_user_names, _.uniq);
+
+      //3. 특정인의 posts에 comments를 단 친구들 카운트 정보
+      _.go(
+        { user_id: 101 },
+        posts_by,
+        comments_by_posts,
+        _.map(function (comment) {
+          return _.find(users, function (user) {
+            return user.id == comment.user_id;
+          }).name;
+        }),
+        _.count_by,
+        console.log
+      );
+
+      var f3 = _.pipe(f1, comment_to_user_names, _.count_by);
+
+      //4. 특정인의 comment를 단 posts 거르기
+      _.go(
+        _.where(comments, { user_id: 105 }),
+        _.pluck('post_id'),
+        _.uniq,
+        function (post_ids) {
+          return _.filter(posts, function (post) {
+            return _.contains(post_ids, post.id);
+          });
+        },
+        console.log
+      );
+      //5. users + posts+ comments (index_by와 group_by로 효율 높이기)
+    </script>
+  </body>
+</html>
