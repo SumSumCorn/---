@@ -1,0 +1,60 @@
+!<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>비동기 함수형 프로그래밍</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+    <script src="./js/partial.js"></script>
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+
+    <script>
+      function square(a) {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve(a * a);
+          }, 500);
+        });
+      }
+
+      //square(10).then(function (res) {
+      //  console.log(res);
+      //});
+
+      // 비동기 코드만 제어
+      //square(10).then(square).then(square).then(square).then(console.log);
+
+      // 동기든 비동기든 동작가능
+      //_.go(square(10), square, square, square, console.log);
+
+      var list = [2, 3, 4];
+      var i = 0;
+      new Promise(function (resolve) {
+        (function recur(res) {
+          if (list.length == res.length) {
+            return resolve(res);
+          }
+          square(list[res.length]).then(function (val) {
+            res.push(val);
+            recur(res);
+          });
+        })([]);
+      }).then(console.log);
+
+      _.go(list, _.map(square), console.log);
+    </script>
+  </body>
+</html>
